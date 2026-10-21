@@ -266,6 +266,47 @@
     });
   }
 
+
+  /* ---------- Design switcher (preview only) ---------- */
+  // A small bar on every version for flipping between the four designs.
+  // Turn it off at launch with `designSwitcher: false` in config.js.
+  function initDesignSwitcher() {
+    if (cfg.designSwitcher === false) return;
+    var designs = [["0", "/", "Original"], ["1", "/astro-1/", "Pathways"], ["2", "/astro-2/", "Editorial"], ["3", "/astro-3/", "Bento"]];
+    var path = location.pathname.replace(/index\.html$/, "");
+    var style = document.createElement("style");
+    style.textContent =
+      ".kb-switch{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:4px;" +
+      "padding:6px;background:#17181b;border-radius:999px;box-shadow:0 12px 30px -8px rgba(0,0,0,.45);font:600 14px/1 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;max-width:calc(100% - 16px)}" +
+      ".kb-switch span{color:#a9abb1;padding:0 8px 0 10px;white-space:nowrap}" +
+      ".kb-switch a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border-radius:999px;color:#f1f0ec;text-decoration:none;white-space:nowrap}" +
+      ".kb-switch a:hover{background:rgba(255,255,255,.1)}" +
+      ".kb-switch a[aria-current=page]{background:#f2c14e;color:#17181b}" +
+      ".kb-switch a:focus-visible{outline:3px solid #f2c14e;outline-offset:2px}" +
+      ".kb-switch small{font-weight:500;opacity:.85}" +
+      "@media (max-width:640px){.kb-switch small{display:none}}" +
+      "@media print{.kb-switch{display:none}}" +
+      "body{padding-bottom:80px}";
+    document.head.appendChild(style);
+
+    var nav = document.createElement("nav");
+    nav.className = "kb-switch";
+    nav.setAttribute("aria-label", "Design versions");
+    var label = document.createElement("span");
+    label.textContent = "Design";
+    nav.appendChild(label);
+    designs.forEach(function (d) {
+      var a = document.createElement("a");
+      a.href = d[1];
+      a.setAttribute("aria-label", "Design " + d[0] + ", " + d[2]);
+      a.innerHTML = d[0] + " <small></small>";
+      a.querySelector("small").textContent = d[2];
+      if (path === d[1] || (d[1] !== "/" && path === d[1].slice(0, -1))) a.setAttribute("aria-current", "page");
+      nav.appendChild(a);
+    });
+    document.body.appendChild(nav);
+  }
+
   applyBrand();
   applyStatuses();
   applyMode();
@@ -273,4 +314,5 @@
   buildDialogBody();
   initDialog();
   initMenu();
+  initDesignSwitcher();
 })();

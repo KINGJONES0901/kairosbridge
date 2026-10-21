@@ -70,6 +70,10 @@ window.SITE_CONFIG = {
     icwp: { status: "target", effectiveDate: "" },
   },
 
+  // Preview only: the "Design 0 1 2 3" bar at the bottom of every page.
+  // Set to false once you have picked a design.
+  designSwitcher: true,
+
   // Shown in the footer.
   footerNote: "Working brand concept · October 2026",
 };
