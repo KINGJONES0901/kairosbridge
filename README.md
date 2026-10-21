@@ -51,7 +51,7 @@ Do this only once the license, contact details and domain are final:
 1. Remove `X-Robots-Tag` in `netlify.toml`.
 2. Change the robots meta tag in `index.html` to `index,follow`.
 3. Replace `robots.txt` with `Allow: /`.
-4. Add `og:url` and a canonical link with the real domain. Only add LocalBusiness structured data with verified address and phone details. Never add ratings.
+4. Change `og:url` and `og:image` in `index.html` from `kairosbridge.netlify.app` to the real domain, and add a canonical link. Only add LocalBusiness structured data with verified address and phone details. Never add ratings.
 
 ## Inquiry form (not built yet, on purpose)
 
