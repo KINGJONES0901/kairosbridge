@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>KairoBridge | Compare designs</title>
+  <meta name="description" content="Switch between the four KairoBridge Home Care designs on one page.">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <style>
+    :root { --bar: #17181b; --bar-2: #26282d; --text: #f1f0ec; --muted: #a9abb1; --accent: #f2c14e; --stage: #e9e8e4; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; display: flex; flex-direction: column; background: var(--stage); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--text); }
+    .bar { background: var(--bar); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 16px; }
+    .title { font-weight: 700; margin-right: auto; white-space: nowrap; }
+    .title span { color: var(--muted); font-weight: 500; }
+    .group { display: inline-flex; background: var(--bar-2); border-radius: 999px; padding: 4px; gap: 2px; flex-wrap: wrap; }
+    .group button { min-height: 38px; padding: 8px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--text); font: 600 14px inherit; font-family: inherit; cursor: pointer; white-space: nowrap; }
+    .group button:hover { background: rgba(255,255,255,.08); }
+    .group button[aria-pressed="true"] { background: var(--accent); color: #17181b; }
+    .group button small { font-weight: 500; opacity: .8; }
+    .nav-btns button { width: 38px; padding: 0; font-size: 18px; }
+    a.open { color: var(--text); font-weight: 600; text-decoration: none; padding: 8px 4px; white-space: nowrap; }
+    a.open:hover { text-decoration: underline; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .about { width: 100%; margin: 0; color: var(--muted); font-size: 13px; }
+    .stage { flex: 1; min-height: 0; display: flex; justify-content: center; padding: 0; transition: padding .2s ease; }
+    .stage.phone { padding: 18px 16px; }
+    .frame { width: 100%; height: 100%; border: 0; background: #fff; display: block; }
+    .stage.phone .frame { width: 390px; max-width: 100%; border-radius: 28px; box-shadow: 0 0 0 10px #17181b, 0 30px 60px -20px rgba(0,0,0,.5); }
+    .frame[hidden] { display: none; }
+    .hint { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    @media (max-width: 700px) {
+      .hint, .device { display: none; }
+      .title { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) { .stage { transition: none; } }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <div class="title">KairoBridge <span>· compare designs</span></div>
+    <div class="group nav-btns" role="group" aria-label="Step through designs">
+      <button type="button" id="prev" aria-label="Previous design">‹</button>
+      <button type="button" id="next" aria-label="Next design">›</button>
+    </div>
+    <div class="group" role="group" aria-label="Design">
+      <button type="button" data-v="0" aria-pressed="true">0 <small>Original</small></button>
+      <button type="button" data-v="1" aria-pressed="false">1 <small>Pathways</small></button>
+      <button type="button" data-v="2" aria-pressed="false">2 <small>Editorial</small></button>
+      <button type="button" data-v="3" aria-pressed="false">3 <small>Bento</small></button>
+    </div>
+    <div class="group device" role="group" aria-label="Screen size">
+      <button type="button" data-device="desktop" aria-pressed="true">Desktop</button>
+      <button type="button" data-device="phone" aria-pressed="false">Phone</button>
+    </div>
+    <a class="open" id="open" href="/" target="_blank" rel="noopener">Open full page ↗</a>
+    <span class="hint">Tip: ← → keys switch designs</span>
+  </header>
+  <main class="stage" id="stage">
+    <iframe class="frame" data-v="0" src="/" title="Astro 0, Original design"></iframe>
+    <iframe class="frame" data-v="1" src="/astro-1/" title="Astro 1, Pathways design" hidden loading="lazy"></iframe>
+    <iframe class="frame" data-v="2" src="/astro-2/" title="Astro 2, Editorial design" hidden loading="lazy"></iframe>
+    <iframe class="frame" data-v="3" src="/astro-3/" title="Astro 3, Bento design" hidden loading="lazy"></iframe>
+  </main>
+<script>
+(function () {
+  "use strict";
+  var PATHS = ["/", "/astro-1/", "/astro-2/", "/astro-3/"];
+  var vBtns = Array.prototype.slice.call(document.querySelectorAll("[data-v]")).filter(function (el) { return el.tagName === "BUTTON"; });
+  var dBtns = Array.prototype.slice.call(document.querySelectorAll("[data-device]"));
+  var frames = Array.prototype.slice.call(document.querySelectorAll("iframe.frame"));
+  var stage = document.getElementById("stage");
+  var open = document.getElementById("open");
+  var current = 0;
+
+  function show(i) {
+    current = (i + PATHS.length) % PATHS.length;
+    vBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.v === current)); });
+    frames.forEach(function (f) { f.hidden = +f.dataset.v !== current; });
+    open.href = PATHS[current];
+    history.replaceState(null, "", "#astro-" + current + (stage.classList.contains("phone") ? "-phone" : ""));
+  }
+  function device(name) {
+    stage.classList.toggle("phone", name === "phone");
+    dBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.device === name)); });
+    show(current);
+  }
+
+  vBtns.forEach(function (b) { b.addEventListener("click", function () { show(+b.dataset.v); }); });
+  dBtns.forEach(function (b) { b.addEventListener("click", function () { device(b.dataset.device); }); });
+  document.getElementById("prev").addEventListener("click", function () { show(current - 1); });
+  document.getElementById("next").addEventListener("click", function () { show(current + 1); });
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === "ArrowLeft") show(current - 1);
+    else if (e.key === "ArrowRight") show(current + 1);
+  });
+
+  // Start from the link's #astro-N(-phone), so a shared link opens on that design.
+  var m = /^#astro-([0-3])(-phone)?$/.exec(location.hash);
+  if (m) { current = +m[1]; if (m[2]) device("phone"); }
+  show(current);
+})();
+</script>
+</body>
+</html>

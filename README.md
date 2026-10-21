@@ -17,6 +17,7 @@ Prelaunch one-page site for an Atlanta in-home nursing and personal care company
 | `/astro-2/` | **Editorial**: aubergine, cream and clay, large serif chapters |
 | `/astro-3/` | **Bento**: rounded tiles, "Who needs care?" child/adult switch |
 | `/versions/` | Side-by-side chooser |
+| `/compare/` | One page with a switcher (buttons or ← → keys, Desktop/Phone view). `/compare/#astro-2-phone` opens straight on a design |
 
 All four read the same `assets/js/config.js` and `assets/js/app.js`, so company facts and statuses change everywhere at once. Each Astro folder only has its own `index.html` and `style.css` (Astro 3 adds `tabs.js`). The versions never get indexed, even after launch. When you pick a winner, it can replace the home page.
 

@@ -255,6 +255,31 @@ for (const v of ["astro-1/", "astro-2/", "astro-3/"]) {
   await ctx.close();
 }
 
+{
+  // One-page switcher
+  const { ctx, page, errors } = await open(1280);
+  await page.goto(new URL("compare/#astro-2", URL_).href);
+  const visible = () => page.locator("iframe.frame:not([hidden])").getAttribute("src");
+  ok(await visible() === "/astro-2/", "compare: opens on the design named in the link");
+  await page.keyboard.press("ArrowRight");
+  ok(await visible() === "/astro-3/" && /#astro-3$/.test(page.url()), "compare: right arrow moves to the next design");
+  await page.keyboard.press("ArrowRight");
+  ok(await visible() === "/", "compare: wraps around to Astro 0");
+  await page.locator('button[data-v="1"]').click();
+  ok(await visible() === "/astro-1/" && (await page.locator("#open").getAttribute("href")) === "/astro-1/", "compare: buttons switch design and full-page link");
+  await page.locator('button[data-device="phone"]').click();
+  const fw = await page.locator("iframe.frame:not([hidden])").evaluate(f => f.getBoundingClientRect().width);
+  ok(fw === 390, `compare: phone view is 390px wide (${fw})`);
+  const inner = page.frameLocator('iframe[data-v="1"]');
+  ok(await inner.locator(".menu-toggle").isVisible(), "compare: phone view shows the mobile menu");
+  ok(errors.length === 0, "compare: no console errors " + errors.join(" | "));
+  await ctx.close();
+  const m = await open(390);
+  await m.page.goto(new URL("compare/", URL_).href);
+  ok(await m.page.evaluate(() => document.documentElement.scrollWidth - innerWidth) <= 0, "compare: no overflow on a phone");
+  await m.ctx.close();
+}
+
 // ---- Contrast ----
 {
   const { ctx, page } = await open(1280);
