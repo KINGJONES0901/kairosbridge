@@ -40,3 +40,20 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=3600, must-revalidate"
+
+# Design versions. Astro 0 is the home page; Astro 1 to 3 live in their own
+# folders and stay out of search results even after launch.
+[[redirects]]
+  from = "/astro-0/*"
+  to = "/"
+  status = 302
+
+[[headers]]
+  for = "/astro-*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/versions/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

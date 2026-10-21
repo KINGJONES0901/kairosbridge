@@ -8,6 +8,18 @@ Prelaunch one-page site for an Atlanta in-home nursing and personal care company
 
 **Add new site → Import an existing project → GitHub →** this repository. Leave the base directory and build command empty and the publish directory as `.` (`netlify.toml` already sets this). Netlify gives it a free `*.netlify.app` address. Add the custom domain only after the name is cleared.
 
+## Design versions
+
+| Address | Design |
+|---|---|
+| `/` | **Astro 0**: the original concept (also reachable as `/astro-0/`) |
+| `/astro-1/` | **Pathways**: navy and teal, GAPP/ICWP path picker, program comparison |
+| `/astro-2/` | **Editorial**: aubergine, cream and clay, large serif chapters |
+| `/astro-3/` | **Bento**: rounded tiles, "Who needs care?" child/adult switch |
+| `/versions/` | Side-by-side chooser |
+
+All four read the same `assets/js/config.js` and `assets/js/app.js`, so company facts and statuses change everywhere at once. Each Astro folder only has its own `index.html` and `style.css` (Astro 3 adds `tabs.js`). The versions never get indexed, even after launch. When you pick a winner, it can replace the home page.
+
 ## Files
 
 | File | What it is |

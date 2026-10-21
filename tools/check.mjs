@@ -192,12 +192,75 @@ for (const w of [390, 320]) {
   await c2.close();
 }
 
+// ---- Design versions (Astro 1 to 3) ----
+for (const v of ["astro-1/", "astro-2/", "astro-3/"]) {
+  const vurl = new URL(v, URL_).href;
+  for (const w of [1280, 390, 320]) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: 860 } });
+    const page = await ctx.newPage();
+    const errors = [];
+    page.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
+    page.on("pageerror", e => errors.push(String(e)));
+    await page.goto(vurl, { waitUntil: "load" });
+    const r = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth - window.innerWidth,
+      missing: [...document.querySelectorAll('a[href^="#"]')].map(a => a.getAttribute("href")).filter(h => h.length > 1 && document.querySelectorAll(h).length !== 1),
+      forms: document.querySelectorAll("form, input, textarea, select").length,
+      tags: [...document.querySelectorAll("[data-status]")].map(t => t.textContent),
+      robots: document.querySelector('meta[name="robots"]')?.content,
+      h1: document.querySelectorAll("h1").length,
+    }));
+    ok(r.overflow <= 0 && errors.length === 0, `${v} ${w}px: no overflow (${r.overflow}), no errors ${errors.join(" | ")}`);
+    if (w === 1280) {
+      ok(r.missing.length === 0 && r.forms === 0 && r.h1 === 1 && r.robots === "noindex,nofollow", `${v}: links resolve, no form fields, one h1, noindex`);
+      ok(r.tags.length === 5 && r.tags.every(t => /Planned|pending/i.test(t)), `${v}: all statuses planned/pending`);
+      await page.locator("summary").first().click();
+      ok(await page.locator("details").first().evaluate(d => d.open), `${v}: FAQ opens`);
+      await page.locator("#launch").focus(); await page.keyboard.press("Enter");
+      ok(await page.locator("#status").evaluate(d => d.open) && (await page.getByRole("dialog", { name: "Preparing to launch" }).count()) === 1, `${v}: named dialog opens`);
+      await page.keyboard.press("Escape");
+      ok(await focusedId(page) === "launch", `${v}: Escape closes dialog and restores focus`);
+    } else {
+      const toggle = page.locator(".menu-toggle");
+      await toggle.click();
+      const hrefs = await page.locator(".menu a").evaluateAll(as => as.filter(a => a.offsetParent).map(a => a.getAttribute("href")));
+      ok(["#care", "#programs", "#approach", "#questions", "#contact"].every(h => hrefs.includes(h)), `${v} ${w}px: menu reaches every section`);
+      const box = await toggle.boundingBox();
+      await page.keyboard.press("Escape");
+      ok((await toggle.getAttribute("aria-expanded")) === "false" && box.height >= 44, `${v} ${w}px: menu closes with Escape, 44px target`);
+    }
+    await ctx.close();
+  }
+}
+{
+  // Astro 3 program tabs
+  const { ctx, page } = await open(1280);
+  await page.goto(new URL("astro-3/", URL_).href);
+  ok(await page.locator("#panel-child").isVisible() && await page.locator("#panel-adult").isHidden(), "astro-3: child tab shown first");
+  await page.locator("#tab-child").focus(); await page.keyboard.press("ArrowRight");
+  ok(await page.locator("#panel-adult").isVisible() && await focusedId(page) === "tab-adult", "astro-3: arrow key switches to adult tab");
+  await page.locator('a[data-tab-link="tab-child"]').click();
+  ok(await page.locator("#panel-child").isVisible(), "astro-3: GAPP tile opens child tab");
+  await ctx.close();
+  const nojs = await open(390, { js: false });
+  await nojs.page.goto(new URL("astro-3/", URL_).href);
+  ok(await nojs.page.locator("#panel-child").isVisible() && await nojs.page.locator("#panel-adult").isVisible(), "astro-3 no-JS: both programs visible");
+  await nojs.ctx.close();
+}
+{
+  const { ctx, page } = await open(1280);
+  await page.goto(new URL("versions/", URL_).href);
+  const links = await page.locator("a.pick").evaluateAll(as => as.map(a => a.href));
+  for (const l of links) ok((await page.request.get(l)).status() === 200, `versions page link works: ${l}`);
+  await ctx.close();
+}
+
 // ---- Contrast ----
 {
   const { ctx, page } = await open(1280);
   const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + .05) / (y + .05); };
-  for (const [fg, bg, label] of [["#5c6f67", "#faf8f1", "body copy"], ["#52645c", "#e5e9dc", "copy on pale green"], ["#5f7258", "#faf8f1", "eyebrow"], ["#536650", "#e5e9dc", "eyebrow on pale"], ["#7c6845", "#faf8f1", "step numbers"], ["#183e39", "#e5e9dc", "ink on pale"]]) {
+  for (const [fg, bg, label] of [["#5c6f67", "#faf8f1", "body copy"], ["#52645c", "#e5e9dc", "copy on pale green"], ["#5f7258", "#faf8f1", "eyebrow"], ["#536650", "#e5e9dc", "eyebrow on pale"], ["#7c6845", "#faf8f1", "step numbers"], ["#183e39", "#e5e9dc", "ink on pale"], ["#4a5a6b", "#ffffff", "astro-1 copy"], ["#0d6e72", "#ffffff", "astro-1 teal"], ["#c9d7e6", "#12304f", "astro-1 band copy"], ["#dff3f1", "#0d6e72", "astro-1 cta copy"], ["#5d4f57", "#f6efe4", "astro-2 copy"], ["#9c4527", "#f6efe4", "astro-2 clay"], ["#5d4f57", "#ece0cc", "astro-2 copy on sand"], ["#d9ccd3", "#2a1c2c", "astro-2 dark copy"], ["#e0956d", "#2a1c2c", "astro-2 clay on dark"], ["#514d78", "#f4f2fb", "astro-3 copy"], ["#514d78", "#c8efdf", "astro-3 on mint"], ["#514d78", "#ffd8c2", "astro-3 on peach"], ["#514d78", "#ffe9a8", "astro-3 on sun"], ["#d8d5f3", "#27235c", "astro-3 on ink"]]) {
     const r = ratio(fg, bg); ok(r >= 4.5, `contrast ${label} ${r.toFixed(2)}:1`);
   }
   await ctx.close();
