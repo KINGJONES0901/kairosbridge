@@ -1,0 +1,5 @@
+# PRELAUNCH: blocks all crawlers. At launch replace with:
+#   User-agent: *
+#   Allow: /
+User-agent: *
+Disallow: /

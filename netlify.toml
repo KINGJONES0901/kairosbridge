@@ -1,0 +1,42 @@
+# KairoBridge Home Care: Netlify configuration.
+# Static site with no build step; the site root is this folder.
+
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    # ---- LAUNCH SWITCH ----
+    # Keeps search engines out during prelaunch. Remove at launch, together with
+    # the robots meta tag in index.html and the rule in robots.txt.
+    X-Robots-Tag = "noindex, nofollow"
+
+# Owner planning files must never be served, even if one is copied in by mistake.
+[[redirects]]
+  from = "/docs/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/tools/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/README.md"
+  to = "/404"
+  status = 404
+  force = true
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
