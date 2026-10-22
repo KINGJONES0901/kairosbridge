@@ -55,19 +55,19 @@
       <button type="button" data-device="desktop" aria-pressed="true">Desktop</button>
       <button type="button" data-device="phone" aria-pressed="false">Phone</button>
     </div>
-    <a class="open" id="open" href="/" target="_blank" rel="noopener">Open full page ↗</a>
+    <a class="open" id="open" href="/astro-0/" target="_blank" rel="noopener">Open full page ↗</a>
     <span class="hint">Tip: ← → keys switch designs</span>
   </header>
   <main class="stage" id="stage">
-    <iframe class="frame" data-v="0" src="/" title="Astro 0, Original design"></iframe>
+    <iframe class="frame" data-v="0" src="/astro-0/" title="Astro 0, Original design"></iframe>
     <iframe class="frame" data-v="1" src="/astro-1/" title="Astro 1, Pathways design" hidden loading="lazy"></iframe>
     <iframe class="frame" data-v="2" src="/astro-2/" title="Astro 2, Editorial design" hidden loading="lazy"></iframe>
-    <iframe class="frame" data-v="3" src="/astro-3/" title="Astro 3, Bento design" hidden loading="lazy"></iframe>
+    <iframe class="frame" data-v="3" src="/" title="Astro 3, Bento design (home page)" hidden loading="lazy"></iframe>
   </main>
 <script>
 (function () {
   "use strict";
-  var PATHS = ["/", "/astro-1/", "/astro-2/", "/astro-3/"];
+  var PATHS = ["/astro-0/", "/astro-1/", "/astro-2/", "/"];
   var vBtns = Array.prototype.slice.call(document.querySelectorAll("[data-v]")).filter(function (el) { return el.tagName === "BUTTON"; });
   var dBtns = Array.prototype.slice.call(document.querySelectorAll("[data-device]"));
   var frames = Array.prototype.slice.call(document.querySelectorAll("iframe.frame"));

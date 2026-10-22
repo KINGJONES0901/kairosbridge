@@ -106,7 +106,7 @@
 
   /* ---------- Notice, FAQ, footer ---------- */
   function applyMode() {
-    var notice = $("#site-notice");
+    var notice = $("#site-notice") || document.createElement("div");
     var available = Object.keys(SERVICE_NAMES).filter(serviceAvailable);
     var counties = (cfg.serviceCounties || []).filter(Boolean);
     var countyText = counties.length ? listWords(counties) + (counties.length > 1 ? " counties" : " County") : "";
@@ -117,7 +117,7 @@
       notice.hidden = true;
     }
 
-    var accepting = $('[data-faq="accepting"]');
+    var accepting = $('[data-faq="accepting"]') || document.createElement("p");
     if (!isPrelaunch) {
       var phrase = available.length
         ? "for " + listWords(available.map(function (k) { return SERVICE_NAMES[k].toLowerCase(); }))
@@ -127,21 +127,21 @@
         : "Yes, " + phrase + ". Please contact us to discuss your needs.";
     }
 
-    var licensed = $('[data-faq="licensed"]');
+    var licensed = $('[data-faq="licensed"]') || document.createElement("p");
     if (!isPrelaunch) {
       var lic = (cfg.license || {}).description;
       licensed.textContent = (lic ? "We hold a " + lic + ". " : "We are licensed for the services marked available above. ") +
         "Medicaid program participation is shown separately for each program under Programs.";
     }
 
-    var area = $('[data-faq="area"]');
+    var area = $('[data-faq="area"]') || document.createElement("p");
     if (countyText) {
       area.textContent = isPrelaunch
         ? "Our planned starting area is " + countyText + ". Final availability will be confirmed through the licensing and staffing process."
         : "We currently serve " + countyText + ".";
     }
 
-    var apply = $('[data-faq="apply"]');
+    var apply = $('[data-faq="apply"]') || document.createElement("p");
     if (contact.careersEmail) {
       fill(apply, [
         (isPrelaunch ? "We are building our team. " : "") + "Nurses and caregivers can email ",
@@ -166,7 +166,7 @@
       if (contact.hours) items.push(["Hours: " + contact.hours]);
       if (contact.address) items.push([contact.address]);
     }
-    if (!items.length) return;
+    if (!items.length || !list) return;
 
     items.forEach(function (parts) {
       var li = document.createElement("li");
@@ -175,7 +175,7 @@
     });
     list.hidden = false;
 
-    var intro = $("[data-contact-intro]");
+    var intro = $("[data-contact-intro]") || document.createElement("p");
     intro.textContent = isPrelaunch
       ? "We are not yet accepting clients, but you can reach us with general questions. Please do not send medical records or personal health information by email, text or voicemail."
       : "Reach us using the details below. Please do not send medical records or personal health information by email, text or voicemail. For an emergency, call 911.";
@@ -183,7 +183,7 @@
 
   /* ---------- Launch-status dialog ---------- */
   function buildDialogBody() {
-    if (isPrelaunch) return; // the prelaunch wording is already in the HTML
+    if (isPrelaunch || !$("#status")) return; // the prelaunch wording is already in the HTML
     $("#status-title").textContent = "Current status";
     var body = $("#status-body");
     body.textContent = "";
@@ -271,8 +271,8 @@
   // A small bar on every version for flipping between the four designs.
   // Turn it off at launch with `designSwitcher: false` in config.js.
   function initDesignSwitcher() {
-    if (cfg.designSwitcher === false) return;
-    var designs = [["0", "/", "Original"], ["1", "/astro-1/", "Pathways"], ["2", "/astro-2/", "Editorial"], ["3", "/astro-3/", "Bento"]];
+    if (cfg.designSwitcher !== true) return;
+    var designs = [["0", "/astro-0/", "Original"], ["1", "/astro-1/", "Pathways"], ["2", "/astro-2/", "Editorial"], ["3", "/", "Bento"]];
     var path = location.pathname.replace(/index\.html$/, "");
     var style = document.createElement("style");
     style.textContent =

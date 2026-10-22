@@ -72,7 +72,7 @@ window.SITE_CONFIG = {
 
   // Preview only: the "Design 0 1 2 3" bar at the bottom of every page.
   // Set to false once you have picked a design.
-  designSwitcher: true,
+  designSwitcher: false,
 
   // Shown in the footer.
   footerNote: "Working brand concept · October 2026",

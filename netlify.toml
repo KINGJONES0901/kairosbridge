@@ -41,12 +41,12 @@
   [headers.values]
     Cache-Control = "public, max-age=3600, must-revalidate"
 
-# Design versions. Astro 0 is the home page; Astro 1 to 3 live in their own
-# folders and stay out of search results even after launch.
+# Design versions. Astro 3 (Bento) is now the home page. The older designs
+# stay in their own folders and out of search results even after launch.
 [[redirects]]
-  from = "/astro-0/*"
+  from = "/astro-3/*"
   to = "/"
-  status = 302
+  status = 301
 
 [[headers]]
   for = "/astro-*"

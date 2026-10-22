@@ -1,8 +1,8 @@
 # KairoBridge Home Care website
 
-Prelaunch one-page site for an Atlanta in-home nursing and personal care company. Plain HTML, CSS and JavaScript with no build step. It's set up for Netlify, the same way as your other sites, but any static host works.
+Short one-page site for an Atlanta Medicaid home care company (GAPP and ICWP), with a "Request care" form. Plain HTML, CSS and JavaScript with no build step. It's set up for Netlify, the same way as your other sites, but any static host works.
 
-> **Current status: PRELAUNCH.** Search engines are blocked. Every service reads "Planned", and GAPP and ICWP read "participation pending". No form or contact detail collects anyone's information.
+> **Current status: PRELAUNCH.** Search engines are blocked. Every service reads "Planned", and GAPP and ICWP read "participation pending". The only thing collected is what people send through the "Request care" form.
 
 ## Deploy on Netlify
 
@@ -12,25 +12,29 @@ Prelaunch one-page site for an Atlanta in-home nursing and personal care company
 
 | Address | Design |
 |---|---|
-| `/` | **Astro 0**: the original concept (also reachable as `/astro-0/`) |
+| `/` | **Home page** (Astro 3, Bento): short copy and the Request care form |
+| `/astro-0/` | **Original**: forest, ivory and gold concept |
 | `/astro-1/` | **Pathways**: navy and teal, GAPP/ICWP path picker, program comparison |
 | `/astro-2/` | **Editorial**: aubergine, cream and clay, large serif chapters |
-| `/astro-3/` | **Bento**: rounded tiles, "Who needs care?" child/adult switch |
+| `/astro-3/` | Redirects to the home page |
+| `/thank-you/`, `/privacy/` | Form confirmation (when JavaScript is off) and privacy note |
 | `/versions/` | Side-by-side chooser |
 | `/compare/` | One page with a switcher (buttons or ← → keys, Desktop/Phone view). `/compare/#astro-2-phone` opens straight on a design |
 
-All four read the same `assets/js/config.js` and `assets/js/app.js`, so company facts and statuses change everywhere at once. Each Astro folder only has its own `index.html` and `style.css` (Astro 3 adds `tabs.js`). The versions never get indexed, even after launch. When you pick a winner, it can replace the home page.
+All four read the same `assets/js/config.js` and `assets/js/app.js`, so company facts and statuses change everywhere at once. The home page uses `assets/css/home.css`; each older version keeps its own stylesheet (Astro 0 uses `assets/css/site.css`). The older versions never get indexed, even after launch. Set `designSwitcher: true` in `config.js` to show a Design 0-3 bar on every page.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `index.html` | The page: prelaunch notice, navigation, hero, planned care, programs, approach, FAQ, launch information, footer, launch-status dialog |
+| `index.html` | Home page: notice, hero tiles, services, programs, Request care form, FAQ |
 | `assets/js/config.js` | **Company facts: edit this one.** Name, mode, contact, counties, service and program status |
 | `assets/js/app.js` | Applies the config, runs the mobile menu and the launch-status dialog |
-| `assets/css/site.css` | All styling (forest, ivory and muted gold palette, from the accepted concept) |
+| `assets/css/home.css` | Home page, thank-you and privacy styling |
+| `assets/js/form.js` | Sends the form to Netlify Forms, success and error messages |
+| `assets/css/site.css` | Astro 0 styling |
 | `assets/img/` | Favicon, app icon, link-preview card (`social-card.png`) |
-| `tools/check.mjs` | Browser checks (layout at 1280/390/320 px, menu, FAQ, dialog, config modes, contrast) |
+| `tools/check.mjs` | Browser checks (layouts at 1280/390/320 px, menu, FAQ, form validation/success/error/honeypot, config modes, versions, contrast) |
 | `tools/make-images.mjs` | Regenerates the icons and the preview card |
 | `netlify.toml`, `robots.txt` | Hosting headers and the prelaunch search block |
 
@@ -66,9 +70,15 @@ Do this only once the license, contact details and domain are final:
 3. Replace `robots.txt` with `Allow: /`.
 4. Change `og:url` and `og:image` in `index.html` from `kairosbridge.netlify.app` to the real domain, and add a canonical link. Only add LocalBusiness structured data with verified address and phone details. Never add ratings.
 
-## Inquiry form (not built yet, on purpose)
+## Request care form
 
-The site doesn't collect information. Before a form is added, decide where submissions go (for example Netlify Forms or an email service), who can read them, spam protection, consent wording and a privacy notice. The form must never ask for diagnoses, Medicaid IDs, dates of birth or medical records. A clinical referral portal is a separate, HIPAA-scoped decision.
+Submissions go to **Netlify Forms** (form name `request-care`). Two one-time steps in Netlify:
+1. **Site configuration → Forms → Enable form detection**, then redeploy (Deploys → Trigger deploy).
+2. **Forms → Form notifications → Add notification → Email notification**: enter the email that should get each request.
+
+Submissions also show under **Forms → request-care** in Netlify. Spam: a hidden honeypot field plus Netlify's built-in spam filter.
+
+Fields: I am (looking for care / referring / nurse or caregiver), who needs care, Medicaid program, name, phone, optional email, ZIP, optional message, and contact consent. Keep it that way: never add fields for diagnoses, Medicaid ID numbers, dates of birth or medical records. Netlify Forms isn't a HIPAA-covered service; once you're operating, collect medical details privately during intake. A clinical referral portal is a separate decision.
 
 ## Checks
 
