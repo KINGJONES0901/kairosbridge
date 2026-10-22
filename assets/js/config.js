@@ -1,6 +1,10 @@
 /*
  * KairoBridge Home Care: the one place to change company facts.
  *
+ * Every page is generated from this file by tools/build.mjs. Netlify runs that
+ * build on each deploy, so editing this file on GitHub updates the whole site
+ * (titles, phone, footer, Google data and sitemap) a minute or two later.
+ *
  * Rules for editing:
  * - Leave a value empty ("" or []) until it is verified. Empty values are hidden;
  *   the site never shows a placeholder phone, email or address.
@@ -8,9 +12,6 @@
  *   A state license does not make a service payer-approved, and Medicaid
  *   enrollment does not make every program active. Change each one only when
  *   you hold the approval for it.
- * - After editing, also update the <title> and description meta tags at the top
- *   of index.html if the company name changes (search engines and link previews
- *   read those before this file runs).
  */
 window.SITE_CONFIG = {
   brand: {
@@ -28,19 +29,41 @@ window.SITE_CONFIG = {
    */
   mode: "prelaunch",
 
-  // Verified public contact details. Each one appears only when filled in, and
-  // only outside prelaunch mode.
+  // The site's address. Change to your own domain once it is connected in
+  // Netlify, e.g. "https://www.kairobridgehomecare.com" (no trailing slash).
+  siteUrl: "https://kairosbridge.netlify.app",
+
+  // Google switch. false = hidden from search engines (prelaunch preview).
+  // Set true once the domain is connected and the name is cleared.
+  indexing: false,
+
+  // Verified public contact details. Each one appears only when filled in.
   contact: {
-    phone: "",        // e.g. "404-555-0123"
+    phone: "",        // e.g. "404-555-0123"  (adds Call buttons and Google data)
     email: "",        // e.g. "care@example.com"
+    fax: "",          // secure fax for referrals, e.g. "404-555-0199"
     hours: "",        // e.g. "Monday to Friday, 9 am to 5 pm"
-    address: "",      // public operating address, only if you want it published
+    // Public office address, only if you want it published. Leave street empty
+    // to show only the city (fine for a service-area business on Google).
+    address: { street: "", city: "Atlanta", region: "GA", postalCode: "" },
     careersEmail: "", // recruiting contact; enables the "apply" answer in the FAQ
   },
 
-  // Contact details are hidden in prelaunch mode. Set true to publish them for
-  // general questions before opening (clients still cannot be accepted).
-  showContactInPrelaunch: false,
+  // Show the contact details above while still in prelaunch mode.
+  showContactInPrelaunch: true,
+
+  // Credentials, shown in the footer and About page once filled in.
+  credentials: {
+    licenseNumber: "", // Georgia license/permit number
+    npi: "",           // agency NPI
+  },
+
+  // Leadership shown on the About page, e.g.
+  // [{ name: "Jane Doe, RN", role: "Director of Nursing" }]
+  people: [],
+
+  // Social profile links, e.g. ["https://www.facebook.com/kairobridge"]
+  sameAs: [],
 
   // The license you actually hold, worded for the public FAQ, e.g.
   // "Georgia Private Home Care Provider permit (nursing and personal care services)".

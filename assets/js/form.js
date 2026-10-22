@@ -1,25 +1,11 @@
 /*
- * "Request care" form. Submissions go to Netlify Forms (form name "request-care").
- * Without JavaScript the browser posts the form normally and lands on /thank-you/.
+ * Site forms (request-care, careers, referral-contact). Submissions go to
+ * Netlify Forms. Without JavaScript the browser posts normally and lands on
+ * /thank-you/. Messages come from each form's data-done, data-done-text,
+ * data-error and data-sending attributes, so they can be translated.
  */
 (function () {
   "use strict";
-
-  var form = document.getElementById("request-form");
-  if (!form) return;
-  var status = form.querySelector(".form-status");
-  var button = form.querySelector('button[type="submit"]');
-  var careFields = form.querySelector("[data-care-fields]");
-
-  // Nurses and caregivers don't need the "who needs care" questions.
-  function syncCareFields() {
-    var picked = form.querySelector('input[name="i_am"]:checked');
-    var jobSeeker = picked && /nurse or caregiver/i.test(picked.value);
-    careFields.hidden = jobSeeker;
-    Array.prototype.forEach.call(careFields.querySelectorAll("select"), function (s) { s.disabled = jobSeeker; });
-  }
-  form.addEventListener("change", function (e) { if (e.target.name === "i_am") syncCareFields(); });
-  syncCareFields();
 
   function encode(data) {
     var parts = [];
@@ -27,37 +13,57 @@
     return parts.join("&");
   }
 
-  form.addEventListener("submit", function (e) {
-    if (!window.fetch || !window.FormData) return; // fall back to a normal post
-    e.preventDefault();
-    var data = new FormData(form);
-    if (data.get("company")) return; // honeypot filled: quietly ignore bots
+  function setup(form) {
+    var status = form.querySelector(".form-status");
+    var button = form.querySelector('button[type="submit"]');
+    var careFields = form.querySelector("[data-care-fields]");
 
-    button.disabled = true;
-    status.className = "form-status";
-    status.textContent = "Sending…";
+    // Nurses and caregivers don't need the "who needs care" questions.
+    if (careFields) {
+      var sync = function () {
+        var picked = form.querySelector('input[name="i_am"]:checked');
+        var hide = !!(picked && picked.hasAttribute("data-hides-care"));
+        careFields.hidden = hide;
+        Array.prototype.forEach.call(careFields.querySelectorAll("select"), function (s) { s.disabled = hide; });
+      };
+      form.addEventListener("change", function (e) { if (e.target.name === "i_am") sync(); });
+      sync();
+    }
 
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: encode(data),
-    }).then(function (res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      var first = String(data.get("name") || "").trim().split(/\s+/)[0];
-      var done = document.createElement("div");
-      done.className = "form-done";
-      done.setAttribute("tabindex", "-1");
-      var h = document.createElement("h3");
-      h.textContent = "Thanks" + (first ? ", " + first : "") + ". We got your request.";
-      var p = document.createElement("p");
-      p.textContent = "We’re opening soon and will call you at the number you gave us. For an emergency, call 911.";
-      done.append(h, p);
-      form.replaceWith(done);
-      done.focus();
-    }).catch(function () {
-      button.disabled = false;
-      status.className = "form-status is-error";
-      status.textContent = "Sorry, that didn’t send. Please check your connection and try again.";
+    form.addEventListener("submit", function (e) {
+      if (!window.fetch || !window.FormData) return; // fall back to a normal post
+      e.preventDefault();
+      var data = new FormData(form);
+      if (data.get("company")) return; // honeypot filled: quietly ignore bots
+
+      button.disabled = true;
+      status.className = "form-status";
+      status.textContent = form.getAttribute("data-sending") || "Sending…";
+
+      fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: encode(data),
+      }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        var first = String(data.get("name") || "").trim().split(/\s+/)[0];
+        var done = document.createElement("div");
+        done.className = "form-done";
+        done.setAttribute("tabindex", "-1");
+        var h = document.createElement("h3");
+        h.textContent = (form.getAttribute("data-done") || "Thanks{name}. We got your message.").replace("{name}", first ? ", " + first : "");
+        var p = document.createElement("p");
+        p.textContent = form.getAttribute("data-done-text") || "";
+        done.append(h, p);
+        form.replaceWith(done);
+        done.focus();
+      }).catch(function () {
+        button.disabled = false;
+        status.className = "form-status is-error";
+        status.textContent = form.getAttribute("data-error") || "Sorry, that didn’t send. Please try again.";
+      });
     });
-  });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("form[data-netlify]"), setup);
 })();

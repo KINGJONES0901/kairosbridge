@@ -1,5 +1,3 @@
-# PRELAUNCH: blocks all crawlers. At launch replace with:
-#   User-agent: *
-#   Allow: /
+# PRELAUNCH: indexing is off in assets/js/config.js. Set indexing: true to open the site to Google.
 User-agent: *
 Disallow: /

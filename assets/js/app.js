@@ -164,7 +164,10 @@
       if (contact.phone) items.push(["Phone: ", { href: telHref(contact.phone), text: contact.phone }]);
       if (contact.email) items.push(["Email: ", { href: "mailto:" + contact.email, text: contact.email }]);
       if (contact.hours) items.push(["Hours: " + contact.hours]);
-      if (contact.address) items.push([contact.address]);
+      var addr = contact.address || {};
+      if (typeof addr === "string" ? addr : addr.street) {
+        items.push([typeof addr === "string" ? addr : [addr.street, addr.city, [addr.region, addr.postalCode].filter(Boolean).join(" ")].filter(Boolean).join(", ")]);
+      }
     }
     if (!items.length || !list) return;
 
@@ -307,11 +310,15 @@
     document.body.appendChild(nav);
   }
 
-  applyBrand();
-  applyStatuses();
-  applyMode();
-  applyContact();
-  buildDialogBody();
+  // Pages made by tools/build.mjs already contain the config's wording (in
+  // their own language), so only the older hand-made versions apply it here.
+  if (!document.documentElement.hasAttribute("data-built")) {
+    applyBrand();
+    applyStatuses();
+    applyMode();
+    applyContact();
+    buildDialogBody();
+  }
   initDialog();
   initMenu();
   initDesignSwitcher();

@@ -2,6 +2,13 @@
 //   python3 -m http.server 8000      (in the site folder)
 //   node tools/check.mjs [http://localhost:8000/] [screenshot-dir]
 import { chromium } from "playwright";
+import { cpSync, mkdtempSync, readFileSync, writeFileSync, rmSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const URL_ = process.argv[2] || "http://localhost:8000/";
 const SHOTS = process.argv[3] || "";
@@ -147,11 +154,11 @@ for (const w of [390, 320]) {
   await toggle.focus(); await page.keyboard.press("Enter");
   ok((await toggle.getAttribute("aria-expanded")) === "true", `home ${w}px: menu opens`);
   const hrefs = await page.locator(".menu a").evaluateAll(as => as.map(a => a.getAttribute("href")));
-  ok(["#care", "#programs", "#questions", "#contact"].every(h => hrefs.includes(h)), `home ${w}px: menu reaches every section`);
+  ok(["/#care", "/gapp/", "/icwp/", "/careers/", "/referrals/", "/#contact"].every(h => hrefs.includes(h)), `home ${w}px: menu reaches every page`);
   await page.keyboard.press("Escape");
   ok((await toggle.getAttribute("aria-expanded")) === "false" && await focusedId(page) === "Menu", `home ${w}px: Escape closes and returns focus`);
   await toggle.click();
-  await page.locator('.menu a[href="#contact"]').click();
+  await page.locator('.menu a[href="/#contact"]').click();
   await page.waitForTimeout(800);
   ok((await toggle.getAttribute("aria-expanded")) === "false", `home ${w}px: choosing a link closes the menu`);
   ok((await toggle.boundingBox()).height >= 44, `home ${w}px: 44px menu button`);
@@ -161,43 +168,103 @@ for (const w of [390, 320]) {
 // ---- No JavaScript ----
 {
   const { ctx, page } = await open(390, { js: false });
-  ok(await page.locator('.navlinks a[href="#programs"]').isVisible(), "no-JS phone: navigation visible");
+  ok(await page.locator('.navlinks a[href="/gapp/"]').isVisible(), "no-JS phone: navigation visible");
   ok(await page.locator("[data-care-fields]").isVisible() && await page.locator("#request-form").isVisible(), "no-JS phone: full form visible");
   ok(await overflow(page) <= 0, "no-JS phone: no overflow");
   await ctx.close();
 }
 
-// ---- Config switches (simulated "limited" launch) ----
+// ---- Every built page ----
 {
-  const cfg = `window.SITE_CONFIG = {
-    brand: { name: "TestBrand", descriptor: "Home Care", city: "Atlanta, Georgia" },
-    mode: "limited",
-    contact: { phone: "404-000-0000", email: "test@example.invalid", careersEmail: "jobs@example.invalid" },
-    serviceCounties: ["Fulton", "DeKalb"],
-    services: { nursing: { status: "available", effectiveDate: "2027-03-01" }, personalCare: { status: "planned" }, coordination: { status: "planned" } },
-    programs: { gapp: { status: "enrolled", effectiveDate: "2027-04-01" }, icwp: { status: "target" } },
-  };`;
-  const { ctx, page, errors } = await open(390, { config: cfg });
-  const r = await page.evaluate(() => ({
-    brand: document.querySelector(".brand").innerText,
-    nursing: document.querySelector('[data-service="nursing"] [data-status]').textContent,
-    personal: document.querySelector('[data-service="personalCare"] [data-status]').textContent,
-    gapp: document.querySelector('[data-program="gapp"] [data-status]').textContent,
-    icwp: document.querySelector('[data-program="icwp"] [data-status]').textContent,
-    tel: document.querySelector('a[href^="tel:"]')?.getAttribute("href"),
-    area: document.querySelector('[data-faq="area"]').textContent,
-  }));
-  ok(r.brand.startsWith("TestBrand"), "config: brand name changes");
-  ok(r.nursing === "Available since March 1, 2027" && r.personal === "Not yet available", "config: services switch independently");
-  ok(r.gapp === "Participating since April 1, 2027" && /pending/.test(r.icwp), "config: GAPP and ICWP switch independently");
-  ok(r.tel === "tel:4040000000", "config: phone appears once set");
-  ok(r.area === "We currently serve Fulton and DeKalb counties.", "config: counties");
-  ok(errors.length === 0, "config: no console errors " + errors.join(" | "));
-  await ctx.close();
+  const sitemap = readFileSync(join(REPO, "sitemap.xml"), "utf8");
+  const paths = [...sitemap.matchAll(/<loc>[^<]*?(\/[^<]*)<\/loc>/g)].map(m => m[1].replace(/^\/\/[^/]+/, ""));
+  const cfgUrl = /<loc>(https?:\/\/[^/]+)/.exec(sitemap)[1];
+  ok(paths.length >= 10, `sitemap lists ${paths.length} pages`);
+  const seen = new Set();
+  for (const path of [...paths, "/thank-you/", "/404.html"]) {
+    for (const w of [390, 320]) {
+      const { ctx, page, errors } = await open(w, { path: path.slice(1) });
+      const r = await page.evaluate(() => ({
+        title: document.title,
+        desc: document.querySelector('meta[name="description"]')?.content || "",
+        canon: document.querySelector('link[rel="canonical"]')?.href || "",
+        robots: document.querySelector('meta[name="robots"]')?.content,
+        h1: document.querySelectorAll("h1").length,
+        ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map(s => { try { return JSON.parse(s.textContent)["@type"]; } catch { return "BAD"; } }),
+        links: [...document.querySelectorAll("a[href]")].map(a => a.getAttribute("href")).filter(h => h.startsWith("/")),
+        overflow: document.documentElement.scrollWidth - innerWidth,
+      }));
+      ok(r.overflow <= 0 && errors.length === 0, `${path} ${w}px: no overflow, no errors ${errors.join(" | ")}`);
+      if (w === 390) {
+        if (paths.includes(path)) ok(r.title.length > 10 && r.title.length <= 70 && r.desc.length >= 50 && r.desc.length <= 170, `${path}: title (${r.title.length}) and description (${r.desc.length}) lengths`);
+        ok(r.canon === cfgUrl + path && r.h1 === 1, `${path}: canonical ${r.canon} and one h1`);
+        ok(r.robots === "noindex,nofollow", `${path}: noindex while indexing is off`);
+        ok(r.ld.includes("MedicalBusiness") && !r.ld.includes("BAD"), `${path}: valid Google business data`);
+        r.links.forEach(l => seen.add(l.split("#")[0] || "/"));
+      }
+      await ctx.close();
+    }
+  }
+  const req = (await browser.newContext()).request;
+  for (const l of seen) ok((await req.get(at(l.slice(1)))).status() === 200, `internal link works: ${l}`);
+}
 
-  const pre = await open(1280, { config: cfg.replace('mode: "limited"', 'mode: "prelaunch"') });
-  ok((await pre.page.locator("[data-status]").allTextContents()).every(t => /Planned|pending/.test(t)), "config: prelaunch overrides available/enrolled flags");
-  await pre.ctx.close();
+// ---- Careers, referral and Spanish forms ----
+for (const [path, formSel, fillFn, expectName, expectText] of [
+  ["careers/", "#careers-form", async p => { await p.fill('#careers-form [name="name"]', "Pat Nurse"); await p.fill('#careers-form [name="phone"]', "404-000-0000"); await p.fill('#careers-form [name="zip"]', "30303"); await p.selectOption('#careers-form [name="role"]', "Licensed Practical Nurse (LPN)"); await p.selectOption('#careers-form [name="experience"]', "3 to 5"); await p.check('#careers-form input[value="Pediatrics"]'); await p.check('#careers-form [name="consent"]'); }, "careers", /Thanks, Pat/],
+  ["referrals/", "#referral-form", async p => { await p.fill('#referral-form [name="name"]', "Sam Manager"); await p.fill('#referral-form [name="organization"]', "Test Org"); await p.selectOption('#referral-form [name="role"]', "Case manager"); await p.fill('#referral-form [name="phone"]', "404-000-0000"); await p.check('#referral-form [name="consent"]'); }, "referral-contact", /Thanks, Sam/],
+  ["es/", "#request-form", async p => { await p.fill('#request-form [name="name"]', "Ana"); await p.fill('#request-form [name="phone"]', "404-000-0000"); await p.fill('#request-form [name="zip"]', "30303"); await p.check('#request-form [name="consent"]'); }, "request-care", /Gracias/],
+]) {
+  const { ctx, page, errors } = await open(390, { path });
+  const posts = [];
+  await page.route(at(""), (route, req) => { if (req.method() !== "POST") return route.continue(); posts.push(req.postData()); return route.fulfill({ status: 200, body: "ok" }); });
+  await page.locator(`${formSel} .submit`).click();
+  ok(posts.length === 0, `${path}: empty form is blocked`);
+  await fillFn(page);
+  await page.locator(`${formSel} .submit`).click();
+  await page.waitForTimeout(300);
+  const body = new URLSearchParams(posts[0] || "");
+  ok(body.get("form-name") === expectName && body.get("consent") === "yes", `${path}: posts the ${expectName} form`);
+  ok(expectText.test(await page.locator(".form-done").innerText()), `${path}: shows the success message`);
+  if (path === "es/") ok(body.get("language") === "Spanish", "es/: tells you the request came in Spanish");
+  ok(!errors.length, `${path}: no errors ${errors.join(" | ")}`);
+  await ctx.close();
+}
+
+// ---- Build switches: phone, counties, Google indexing ----
+{
+  const dir = mkdtempSync(join(tmpdir(), "kb-build-"));
+  cpSync(REPO, dir, { recursive: true, filter: src => !src.includes("/.git") });
+  const cfgPath = join(dir, "assets/js/config.js");
+  let cfg = readFileSync(cfgPath, "utf8")
+    .replace('indexing: false', 'indexing: true')
+    .replace('siteUrl: "https://kairosbridge.netlify.app"', 'siteUrl: "https://www.example-homecare.com"')
+    .replace('phone: "",', 'phone: "404-000-0000",')
+    .replace('serviceCounties: [],', 'serviceCounties: ["Fulton", "DeKalb"],')
+    .replace('licenseNumber: "",', 'licenseNumber: "TEST123",');
+  writeFileSync(cfgPath, cfg);
+  execFileSync("node", [join(dir, "tools/build.mjs")]);
+  const home = readFileSync(join(dir, "index.html"), "utf8");
+  const robotsTxt = readFileSync(join(dir, "robots.txt"), "utf8");
+  const ld = JSON.parse(/<script type="application\/ld\+json">(.*?)<\/script>/.exec(home)[1]);
+  ok(/name="robots" content="index,follow"/.test(home) && /Allow: \//.test(robotsTxt) && /Sitemap: https:\/\/www\.example-homecare\.com\/sitemap\.xml/.test(robotsTxt), "build: indexing switch opens pages, robots.txt and sitemap");
+  ok(/Disallow: \/astro-1\//.test(robotsTxt) && /noindex/.test(readFileSync(join(dir, "thank-you/index.html"), "utf8")), "build: old versions and thank-you stay out of Google");
+  ok((home.match(/href="tel:4040000000"/g) || []).length >= 3, "build: phone adds Call links (header, hero, form, footer)");
+  ok(ld.telephone === "+1-404-000-0000" && ld.areaServed.length === 2 && ld.url === "https://www.example-homecare.com/", "build: Google business data has phone, counties and domain");
+  ok(/rel="canonical" href="https:\/\/www\.example-homecare\.com\/"/.test(home), "build: canonical follows the domain");
+  ok(/License #TEST123/.test(home), "build: license number shows in footer");
+  ok(/We plan to start in Fulton and DeKalb counties/.test(home), "build: counties in FAQ");
+  rmSync(dir, { recursive: true, force: true });
+}
+
+// ---- Older versions still follow config.js ----
+{
+  const cfg = `window.SITE_CONFIG = { brand: { name: "TestBrand", descriptor: "Home Care" }, mode: "limited",
+    services: { nursing: { status: "available", effectiveDate: "2027-03-01" } }, programs: { gapp: { status: "enrolled" }, icwp: { status: "target" } } };`;
+  const { ctx, page, errors } = await open(1280, { config: cfg, path: "astro-1/" });
+  ok(/TestBrand/.test(await page.locator(".brand").innerText()) && (await page.locator('[data-service="nursing"] [data-status]').textContent()) === "Available since March 1, 2027", "astro-1: still reads config.js");
+  ok(errors.length === 0, "astro-1 config: no errors");
+  await ctx.close();
 }
 
 // ---- Older design versions ----

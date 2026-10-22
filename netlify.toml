@@ -1,9 +1,13 @@
 # KairoBridge Home Care: Netlify configuration.
-# Static site with no build step; the site root is this folder.
+# Each deploy runs tools/build.mjs (plain Node, no packages), which rebuilds
+# every page from assets/js/config.js. The site root is this folder.
 
 [build]
   publish = "."
-  command = ""
+  command = "node tools/build.mjs"
+
+[build.environment]
+  NODE_VERSION = "20"
 
 [[headers]]
   for = "/*"
@@ -12,27 +16,25 @@
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    # ---- LAUNCH SWITCH ----
-    # Keeps search engines out during prelaunch. Remove at launch, together with
-    # the robots meta tag in index.html and the rule in robots.txt.
-    X-Robots-Tag = "noindex, nofollow"
+    # Search engine access is controlled by `indexing` in assets/js/config.js
+    # (robots meta tags, robots.txt and sitemap.xml are generated from it).
 
 # Owner planning files must never be served, even if one is copied in by mistake.
 [[redirects]]
   from = "/docs/*"
-  to = "/404"
+  to = "/404.html"
   status = 404
   force = true
 
 [[redirects]]
   from = "/tools/*"
-  to = "/404"
+  to = "/404.html"
   status = 404
   force = true
 
 [[redirects]]
   from = "/README.md"
-  to = "/404"
+  to = "/404.html"
   status = 404
   force = true
 
@@ -60,5 +62,10 @@
 
 [[headers]]
   for = "/compare/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/thank-you/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
