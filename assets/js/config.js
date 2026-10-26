@@ -31,7 +31,7 @@ window.SITE_CONFIG = {
 
   // The site's address. Change to your own domain once it is connected in
   // Netlify, e.g. "https://www.kairobridgehomecare.com" (no trailing slash).
-  siteUrl: "https://kairosbridge.netlify.app",
+  siteUrl: "https://carelife365.com",
 
   // Google switch. false = hidden from search engines (prelaunch preview).
   // Set true once the domain is connected and the name is cleared.
