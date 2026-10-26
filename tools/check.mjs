@@ -238,7 +238,7 @@ for (const [path, formSel, fillFn, expectName, expectText] of [
   const cfgPath = join(dir, "assets/js/config.js");
   let cfg = readFileSync(cfgPath, "utf8")
     .replace('indexing: false', 'indexing: true')
-    .replace('siteUrl: "https://kairosbridge.netlify.app"', 'siteUrl: "https://www.example-homecare.com"')
+    .replace(/siteUrl: "[^"]*"/, 'siteUrl: "https://www.example-homecare.com"')
     .replace('phone: "",', 'phone: "404-000-0000",')
     .replace('serviceCounties: [],', 'serviceCounties: ["Fulton", "DeKalb"],')
     .replace('licenseNumber: "",', 'licenseNumber: "TEST123",');
