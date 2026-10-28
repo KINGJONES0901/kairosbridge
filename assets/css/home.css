@@ -286,3 +286,116 @@ dialog h2 { font-size: 30px; margin-top: 0; }
 /* Keep the brand name on one line on small phones. */
 .brand [data-brand-name] { white-space: nowrap; }
 @media (max-width: 360px) { .brand { font-size: 19px; gap: 8px; } .brand-dot { width: 26px; height: 26px; } }
+
+/* ---------- Section variety ----------
+   Only the hero uses rounded tiles. The other sections each get their own
+   treatment: numbered rows, full-width colour bands, a step line, plain links,
+   lined FAQ and a dark footer. Full-width bands extend their background past
+   the content column with a box-shadow + clip-path, so they never cause
+   horizontal scrolling. */
+.band { position: relative; padding: clamp(48px, 7vw, 88px) 0; margin: 24px 0; }
+.band-ink { background: var(--ink); box-shadow: 0 0 0 100vmax var(--ink); clip-path: inset(0 -100vmax); color: var(--white); }
+.band-mint { background: #e3f6ee; box-shadow: 0 0 0 100vmax #e3f6ee; clip-path: inset(0 -100vmax); }
+.band-head { max-width: 620px; margin-bottom: 36px; }
+.band-ink h2 { color: var(--white); margin: 0 0 8px; }
+.band-ink p { color: #d8d5f3; }
+
+/* Heading on the left, content on the right */
+.split-head { display: grid; grid-template-columns: minmax(180px, 1fr) 2.4fr; gap: 24px clamp(24px, 5vw, 64px); align-items: start; }
+.split-head > h2 { margin: 0; position: sticky; top: 24px; }
+
+/* Numbered rows */
+.row-list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.row-item { display: grid; grid-template-columns: 72px 1fr auto; gap: 20px; align-items: center; padding: 24px 0; border-bottom: 1px solid var(--line); }
+.row-num { font-size: 26px; font-weight: 900; color: #7b6cf6; letter-spacing: -.02em; }
+.row-main h3 { font-size: 22px; margin: 0 0 4px; }
+.row-main p { margin: 0; }
+.row-side { display: grid; justify-items: end; gap: 8px; }
+.row-link { font-weight: 800; color: var(--ink); white-space: nowrap; }
+
+/* Programs on the dark band */
+.prog-cols { display: grid; grid-template-columns: 1fr 1fr; }
+.prog-col { padding: 4px clamp(20px, 4vw, 48px) 4px 0; display: grid; gap: 10px; justify-items: start; align-content: start; }
+.prog-col + .prog-col { padding: 4px 0 4px clamp(20px, 4vw, 48px); border-left: 1px solid rgba(255,255,255,.2); }
+.prog-name { font-size: clamp(56px, 8vw, 96px); font-weight: 900; line-height: .9; letter-spacing: -.04em; margin: 0; }
+.prog-gapp .prog-name { color: var(--mint); }
+.prog-icwp .prog-name { color: var(--peach); }
+.prog-col h3 { color: var(--white); font-size: 18px; font-weight: 700; }
+.prog-col p { color: #d8d5f3; margin: 0; max-width: 42ch; }
+.prog-col .badge { background: transparent; color: var(--white); border-color: rgba(255,255,255,.6); }
+.prog-col .badge.is-active { background: var(--white); color: var(--ink); }
+.prog-link { color: var(--white); font-weight: 800; }
+
+/* How it works: steps on a line */
+.flow { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: f; position: relative; }
+.flow::before { content: ""; position: absolute; left: 22px; right: 22px; top: 22px; border-top: 3px dashed var(--line); }
+.flow li { counter-increment: f; position: relative; display: grid; gap: 6px; padding-top: 62px; }
+.flow li::before { content: counter(f); position: absolute; top: 0; left: 0; width: 46px; height: 46px; border-radius: 50%; background: var(--sun); border: 3px solid var(--bg); display: grid; place-items: center; font-weight: 900; font-size: 18px; }
+.flow strong { font-size: 20px; }
+.flow span { color: var(--muted); }
+
+/* Request care on the mint band */
+.contact-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(20px, 4vw, 56px); align-items: start; }
+.contact-grid .contact-copy h2 { margin: 0 0 10px; font-size: clamp(36px, 5vw, 56px); }
+.contact-grid .contact-copy p { color: var(--ink); max-width: 36ch; }
+.contact-grid .form-card { box-shadow: 0 24px 50px -30px rgba(39,35,92,.45); }
+.call-line a { color: var(--ink); }
+
+/* Referral / careers links */
+.links-row { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 0; }
+.big-link { display: grid; gap: 6px; padding: 36px 24px 36px 0; text-decoration: none; color: var(--ink); }
+.big-link + .big-link { padding-left: 32px; border-left: 1px solid var(--line); }
+.big-link strong { font-size: clamp(26px, 3vw, 36px); font-weight: 900; letter-spacing: -.02em; }
+.big-link strong span { display: inline-block; transition: transform .2s ease; }
+.big-link:hover strong span { transform: translateX(6px); }
+.big-link > span:last-child { color: var(--muted); }
+.big-link-label { font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #5245cc; }
+
+/* FAQ as plain lines */
+.faq { grid-template-columns: 1fr; gap: 0; border-top: 2px solid var(--ink); }
+.faq details { background: none; border-radius: 0; border-bottom: 1px solid var(--line); }
+.faq summary { padding: 20px 52px 20px 0; font-size: 18px; }
+.faq summary::after { right: 0; background: none; border: 2px solid var(--line); }
+.faq details[open] summary::after { background: var(--mint); border-color: var(--mint); }
+.faq details p { padding: 0 0 20px; }
+
+/* Dark footer */
+.site-footer { background: var(--ink); box-shadow: 0 0 0 100vmax var(--ink); clip-path: inset(0 -100vmax); border-top: 0; margin-top: 64px; padding-top: 56px; padding-bottom: 48px; color: #d8d5f3; }
+.site-footer p, .footer-fine { color: #d8d5f3; }
+.footer-name, .footer-h { color: var(--white); }
+.site-footer a { color: var(--white); text-decoration-color: rgba(255,255,255,.35); }
+.site-footer a:hover { text-decoration-color: var(--white); }
+.site-footer a:focus-visible { outline-color: var(--sun); }
+
+/* Inner pages: plain header band, timeline steps, accent rules, sun CTA */
+.page-hero { background: var(--white); box-shadow: 0 0 0 100vmax var(--white); clip-path: inset(0 -100vmax); border-radius: 0; margin: 14px 0 0; padding: clamp(36px, 6vw, 72px) 0; border-bottom: 1px solid var(--line); }
+.page-hero-solo { margin: 40px 0; }
+.steps-list { gap: 0; border-left: 3px solid var(--line); margin-left: 16px; }
+.steps-list li { background: none; border-radius: 0; padding: 4px 0 22px 34px; }
+.steps-list li::before { left: -18px; top: 0; }
+.side-card { background: none; border-radius: 0; padding: 4px 0 4px 24px; border-left: 4px solid #7b6cf6; }
+.cta-band { background: var(--sun); box-shadow: 0 0 0 100vmax var(--sun); clip-path: inset(0 -100vmax); border-radius: 0; padding: clamp(36px, 5vw, 60px) 0; }
+.cta-band h2 { color: var(--ink); }
+.cta-band p { color: var(--ink); }
+.cta-band .pill-light { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.cta-band .pill-outline-light { color: var(--ink); border-color: var(--ink); }
+.section:has(> .cta-band) { padding-bottom: 0; }
+.note { border-radius: 0; background: none; border-left: 4px solid var(--sun); padding: 4px 0 4px 18px; }
+
+@media (max-width: 860px) {
+  .split-head, .contact-grid, .prog-cols, .links-row { grid-template-columns: 1fr; }
+  .split-head > h2 { position: static; }
+  .prog-col + .prog-col { padding: 32px 0 0; margin-top: 32px; border-left: 0; border-top: 1px solid rgba(255,255,255,.2); }
+  .prog-col { padding-right: 0; }
+  .big-link + .big-link { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+  .flow { grid-template-columns: 1fr; gap: 0; }
+  .flow::before { left: 22px; right: auto; top: 22px; bottom: 22px; border-top: 0; border-left: 3px dashed var(--line); }
+  .flow li { padding: 6px 0 26px 66px; min-height: 46px; }
+}
+@media (max-width: 560px) {
+  .row-item { grid-template-columns: 48px 1fr; }
+  .row-side { grid-column: 2; justify-items: start; }
+  .row-num { font-size: 20px; }
+}
+main:has(> .section:last-child > .cta-band) + .site-footer { margin-top: 0; }
+.page-hero { border-bottom: 0; }

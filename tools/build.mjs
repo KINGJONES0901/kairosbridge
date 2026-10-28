@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const ASSET_V = 5; // bump when home.css, app.js or form.js change
+const ASSET_V = 6; // bump when home.css, app.js or form.js change
 
 // ---------- Config ----------
 const sandbox = { window: {} };
@@ -358,19 +358,28 @@ function referralForm() {
 
 // ---------- Pages ----------
 const pages = [];
-const svcCard = (key, cls, icon, h, p, href, es) => `      <article class="card ${cls}" data-service="${key}">
-        <span class="emoji" aria-hidden="true">${icon}</span>
-        <h3>${h}</h3>
-        ${badge(serviceStatus(key, es))}
-        <p>${p}</p>
-        ${href ? `<a class="card-link" href="${href}">${es ? "Más información" : "Learn more"} <span aria-hidden="true">→</span></a>` : ""}
-      </article>`;
-const progCard = (key, cls, h, sub, p, href, es) => `      <article class="panel ${cls}" data-program="${key}">
-        <h3>${h} <span>${sub}</span></h3>
+// Numbered row (services on home and es, roles on careers).
+const svcRow = (key, num, h, p, href, es) => `      <li class="row-item"${key ? ` data-service="${key}"` : ""}>
+        <span class="row-num" aria-hidden="true">${num}</span>
+        <div class="row-main"><h3>${h}</h3><p>${p}</p></div>
+        <div class="row-side">${key ? badge(serviceStatus(key, es)) : ""}${href ? `<a class="row-link" href="${href}">${es ? "Más información" : "Learn more"}<span class="visually-hidden">: ${h}</span> <span aria-hidden="true">→</span></a>` : ""}</div>
+      </li>`;
+// One program column inside the dark programs band.
+const progCol = (key, h, sub, p, href, es) => `      <article class="prog-col prog-${key}" data-program="${key}">
+        <p class="prog-name" aria-hidden="true">${h}</p>
+        <h3><span class="visually-hidden">${h}: </span><span${es ? ' lang="en"' : ""}>${sub}</span></h3>
         <p>${p}</p>
         ${badge(programStatus(key, es))}
-        <a class="card-link" href="${href}">${es ? "Más sobre " + h : "How " + h + " works"} <span aria-hidden="true">→</span></a>
+        ${href ? `<a class="prog-link" href="${href}">${es ? "Más sobre " + h : "How " + h + " works"} <span aria-hidden="true">→</span></a>` : ""}
       </article>`;
+const flow = es => `  <section class="section" id="${es ? "como" : "how"}" aria-labelledby="how-title">
+    <h2 id="how-title">${es ? "Cómo funciona" : "How it works"}</h2>
+    <ol class="flow">
+      <li><strong>${es ? "Comuníquese" : "Reach out"}</strong><span>${es ? "Envíe una solicitud" + (PHONE ? " o llame" : "") + "." : "Send a request" + (PHONE ? " or call" : "") + "."}</span></li>
+      <li><strong>${es ? "Revisamos la cobertura" : "We check coverage"}</strong><span>${es ? "Su estado en GAPP o ICWP y las órdenes del médico." : "Your GAPP or ICWP status and the doctor’s orders."}</span></li>
+      <li><strong>${es ? "La atención empieza en casa" : "Care starts at home"}</strong><span>${es ? "Una enfermera planifica la atención y el personal comienza las horas aprobadas." : "A nurse plans care and staff start the approved hours."}</span></li>
+    </ol>
+  </section>`;
 
 // Home
 {
@@ -413,25 +422,30 @@ const progCard = (key, cls, h, sub, p, href, es) => `      <article class="panel
     </div>
   </section>
 
-  <section class="section" id="care" aria-labelledby="care-title">
+  <section class="section split-head" id="care" aria-labelledby="care-title">
     <h2 id="care-title">Services</h2>
-    <div class="cards">
-${svcCard("nursing", "card-ink", "✚", "Skilled nursing", "RN and LPN care at home, following physician orders.", "/services/skilled-nursing/")}
-${svcCard("personalCare", "card-mint", "♡", "Personal care", "Bathing, dressing, meals and getting around safely.", "/services/personal-care/")}
-${svcCard("coordination", "card-peach", "☰", "Care coordination", "One contact for orders, authorizations and scheduling.", "")}
+    <ol class="row-list">
+${svcRow("nursing", "01", "Skilled nursing", "RN and LPN care at home, following physician orders.", "/services/skilled-nursing/")}
+${svcRow("personalCare", "02", "Personal care", "Bathing, dressing, meals and getting around safely.", "/services/personal-care/")}
+${svcRow("coordination", "03", "Care coordination", "One contact for orders, authorizations and scheduling.", "")}
+    </ol>
+  </section>
+
+  <section class="band band-ink" id="programs" aria-labelledby="programs-title">
+    <div class="band-head">
+      <h2 id="programs-title">Medicaid programs</h2>
+      <p>Two Georgia Medicaid programs pay for care at home.</p>
+    </div>
+    <div class="prog-cols">
+${progCol("gapp", "GAPP", "Georgia Pediatric Program", "Medically fragile children under 21 who need nursing or personal care at home.", "/gapp/")}
+${progCol("icwp", "ICWP", "Independent Care Waiver Program", "Adults 21 to 64 with severe physical disabilities or a brain injury.", "/icwp/")}
     </div>
   </section>
 
-  <section class="section" id="programs" aria-labelledby="programs-title">
-    <h2 id="programs-title">Medicaid programs</h2>
-    <div class="programs">
-${progCard("gapp", "panel-mint", "GAPP", "Georgia Pediatric Program", "Medically fragile children under 21 who need nursing or personal care at home.", "/gapp/")}
-${progCard("icwp", "panel-peach", "ICWP", "Independent Care Waiver Program", "Adults 21 to 64 with severe physical disabilities or a brain injury.", "/icwp/")}
-    </div>
-  </section>
+${flow(false)}
 
-  <section class="section" id="contact" aria-labelledby="contact-title">
-    <div class="contact-card">
+  <section class="band band-mint" id="contact" aria-labelledby="contact-title">
+    <div class="contact-grid">
       <div class="contact-copy">
         <h2 id="contact-title">Request care</h2>
         <p>${PRE ? "Tell us what you need. We’re opening soon and will call you back as we start taking clients." : "Tell us what you need and we’ll call you back."}</p>
@@ -443,20 +457,20 @@ ${progCard("icwp", "panel-peach", "ICWP", "Independent Care Waiver Program", "Ad
     </div>
   </section>
 
-  <section class="section split-tiles" aria-label="Referrals and careers">
-    <a class="tile tile-line" href="/referrals/">
-      <span class="tile-label">Case managers &amp; doctors</span>
-      <strong class="small-strong">Refer a client</strong>
+  <section class="section links-row" aria-label="Referrals and careers">
+    <a class="big-link" href="/referrals/">
+      <span class="big-link-label">Case managers &amp; doctors</span>
+      <strong>Refer a client <span aria-hidden="true">→</span></strong>
       <span>How to send GAPP and ICWP referrals.</span>
     </a>
-    <a class="tile tile-line" href="/careers/">
-      <span class="tile-label">RNs, LPNs, CNAs &amp; aides</span>
-      <strong class="small-strong">Join our team</strong>
+    <a class="big-link" href="/careers/">
+      <span class="big-link-label">RNs, LPNs, CNAs &amp; aides</span>
+      <strong>Join our team <span aria-hidden="true">→</span></strong>
       <span>${PRE ? "We’re building our first team." : "See how to apply."}</span>
     </a>
   </section>
 
-  <section class="section" id="questions" aria-labelledby="questions-title">
+  <section class="section split-head" id="questions" aria-labelledby="questions-title">
     <h2 id="questions-title">FAQ</h2>
     <div class="faq">
       <details>
@@ -643,12 +657,13 @@ pages.push({
   schema: [crumbs([["Home", "/"], ["Careers", "/careers/"]])],
   body: `${pageHero([["Home", "/"], ["Careers", "/careers/"]], "Join our team", PRE ? "We’re building our first team of nurses and caregivers in metro Atlanta. Send your info and we’ll reach out as we start hiring." : "Nurses and caregivers: send your info and we’ll reach out about openings that fit.")}
 
-  <section class="section">
-    <div class="cards">
-      <article class="card card-ink"><span class="emoji" aria-hidden="true">✚</span><h3>RNs</h3><p>Assessments, care plans, supervision and skilled shifts.</p></article>
-      <article class="card card-mint"><span class="emoji" aria-hidden="true">✚</span><h3>LPNs</h3><p>Private duty nursing shifts for children and adults.</p></article>
-      <article class="card card-peach"><span class="emoji" aria-hidden="true">♡</span><h3>CNAs &amp; aides</h3><p>Personal care and daily support at home.</p></article>
-    </div>
+  <section class="section split-head" aria-labelledby="roles-title">
+    <h2 id="roles-title">Roles</h2>
+    <ol class="row-list">
+${svcRow("", "RN", "Registered nurses", "Assessments, care plans, supervision and skilled shifts.", "")}
+${svcRow("", "LPN", "Licensed practical nurses", "Private duty nursing shifts for children and adults.", "")}
+${svcRow("", "CNA", "CNAs &amp; personal care aides", "Personal care and daily support at home.", "")}
+    </ol>
   </section>
 
   <section class="section prose-grid">
@@ -770,33 +785,30 @@ pages.push({
     </div>
   </section>
 
-  <section class="section" id="servicios" aria-labelledby="care-title">
+  <section class="section split-head" id="servicios" aria-labelledby="care-title">
     <h2 id="care-title">Servicios</h2>
-    <div class="cards">
-${svcCard("nursing", "card-ink", "✚", "Enfermería especializada", "Atención de enfermeras RN y LPN en casa, según las órdenes del médico.", "", true)}
-${svcCard("personalCare", "card-mint", "♡", "Cuidado personal", "Ayuda para bañarse, vestirse, comer y moverse con seguridad.", "", true)}
-${svcCard("coordination", "card-peach", "☰", "Coordinación de atención", "Un solo contacto para órdenes, autorizaciones y horarios.", "", true)}
+    <ol class="row-list">
+${svcRow("nursing", "01", "Enfermería especializada", "Atención de enfermeras RN y LPN en casa, según las órdenes del médico.", "", true)}
+${svcRow("personalCare", "02", "Cuidado personal", "Ayuda para bañarse, vestirse, comer y moverse con seguridad.", "", true)}
+${svcRow("coordination", "03", "Coordinación de atención", "Un solo contacto para órdenes, autorizaciones y horarios.", "", true)}
+    </ol>
+  </section>
+
+  <section class="band band-ink" id="programas" aria-labelledby="programs-title">
+    <div class="band-head">
+      <h2 id="programs-title">Programas de Medicaid</h2>
+      <p>Dos programas de Medicaid de Georgia pagan la atención en casa.</p>
+    </div>
+    <div class="prog-cols">
+${progCol("gapp", "GAPP", "Georgia Pediatric Program", "Niños y jóvenes menores de 21 años, médicamente frágiles, que necesitan enfermería o cuidado personal en casa.", "", true)}
+${progCol("icwp", "ICWP", "Independent Care Waiver Program", "Adultos de 21 a 64 años con discapacidades físicas graves o una lesión cerebral.", "", true)}
     </div>
   </section>
 
-  <section class="section" id="programas" aria-labelledby="programs-title">
-    <h2 id="programs-title">Programas de Medicaid</h2>
-    <div class="programs">
-      <article class="panel panel-mint" data-program="gapp">
-        <h3>GAPP <span lang="en">Georgia Pediatric Program</span></h3>
-        <p>Niños y jóvenes menores de 21 años, médicamente frágiles, que necesitan enfermería o cuidado personal en casa.</p>
-        ${badge(programStatus("gapp", true))}
-      </article>
-      <article class="panel panel-peach" data-program="icwp">
-        <h3>ICWP <span lang="en">Independent Care Waiver Program</span></h3>
-        <p>Adultos de 21 a 64 años con discapacidades físicas graves o una lesión cerebral.</p>
-        ${badge(programStatus("icwp", true))}
-      </article>
-    </div>
-  </section>
+${flow(true)}
 
-  <section class="section" id="contacto" aria-labelledby="contact-title">
-    <div class="contact-card">
+  <section class="band band-mint" id="contacto" aria-labelledby="contact-title">
+    <div class="contact-grid">
       <div class="contact-copy">
         <h2 id="contact-title">Solicitar atención</h2>
         <p>${PRE ? "Cuéntenos qué necesita. Abriremos pronto y le llamaremos cuando empecemos a aceptar clientes." : "Cuéntenos qué necesita y le llamaremos."}</p>
@@ -808,7 +820,7 @@ ${svcCard("coordination", "card-peach", "☰", "Coordinación de atención", "Un
     </div>
   </section>
 
-  <section class="section" id="preguntas" aria-labelledby="questions-title">
+  <section class="section split-head" id="preguntas" aria-labelledby="questions-title">
     <h2 id="questions-title">Preguntas frecuentes</h2>
     <div class="faq">
       <details><summary>¿Ya aceptan clientes?</summary><p>${PRE ? "Todavía no. Estamos terminando la licencia y la inscripción en Medicaid. Envíe una solicitud y le llamaremos cuando abramos." : "Sí, para los servicios marcados como disponibles."}</p></details>

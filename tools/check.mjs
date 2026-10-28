@@ -308,7 +308,7 @@ for (const v of ["astro-0/", "astro-1/", "astro-2/"]) {
 {
   const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + .05) / (y + .05); };
-  for (const [fg, bg, label] of [["#514d78", "#f4f2fb", "copy"], ["#514d78", "#ffffff", "form hints"], ["#27235c", "#c8efdf", "on mint"], ["#514d78", "#ffd8c2", "on peach"], ["#514d78", "#ffe9a8", "on sun"], ["#d8d5f3", "#27235c", "on ink"], ["#b42318", "#ffffff", "form error"]]) {
+  for (const [fg, bg, label] of [["#514d78", "#f4f2fb", "copy"], ["#514d78", "#ffffff", "form hints"], ["#27235c", "#c8efdf", "on mint"], ["#514d78", "#ffd8c2", "on peach"], ["#514d78", "#ffe9a8", "on sun"], ["#d8d5f3", "#27235c", "on ink"], ["#b42318", "#ffffff", "form error"], ["#5245cc", "#f4f2fb", "link labels"], ["#514d78", "#e3f6ee", "on mint band"], ["#27235c", "#ffe9a8", "on sun band"], ["#d8d5f3", "#27235c", "footer"]]) {
     const r = ratio(fg, bg); ok(r >= 4.5, `contrast ${label} ${r.toFixed(2)}:1`);
   }
 }

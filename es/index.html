@@ -26,10 +26,10 @@
   <meta property="og:locale" content="es_US">
   <meta name="twitter:card" content="summary_large_image">
   <script>document.documentElement.classList.add("js")</script>
-  <link rel="stylesheet" href="/assets/css/home.css?v=5">
-  <script src="/assets/js/config.js?v=5" defer></script>
-  <script src="/assets/js/app.js?v=5" defer></script>
-  <script src="/assets/js/form.js?v=5" defer></script>
+  <link rel="stylesheet" href="/assets/css/home.css?v=6">
+  <script src="/assets/js/config.js?v=6" defer></script>
+  <script src="/assets/js/app.js?v=6" defer></script>
+  <script src="/assets/js/form.js?v=6" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"MedicalBusiness","@id":"https://carelife365.com/#business","name":"CareLife 365","url":"https://carelife365.com/","logo":"https://carelife365.com/assets/img/apple-touch-icon.png","image":"https://carelife365.com/assets/img/social-card.png","description":"In-home skilled nursing and personal care for children and adults through Georgia Medicaid GAPP and ICWP.","areaServed":{"@type":"City","name":"Atlanta, Georgia"},"knowsLanguage":["en","es"],"address":{"@type":"PostalAddress","addressLocality":"Atlanta","addressRegion":"GA","addressCountry":"US"}}</script>
 </head>
 <body>
@@ -76,51 +76,61 @@
     </div>
   </section>
 
-  <section class="section" id="servicios" aria-labelledby="care-title">
+  <section class="section split-head" id="servicios" aria-labelledby="care-title">
     <h2 id="care-title">Servicios</h2>
-    <div class="cards">
-      <article class="card card-ink" data-service="nursing">
-        <span class="emoji" aria-hidden="true">✚</span>
-        <h3>Enfermería especializada</h3>
-        <span class="badge" data-status>Planificado</span>
-        <p>Atención de enfermeras RN y LPN en casa, según las órdenes del médico.</p>
-        
-      </article>
-      <article class="card card-mint" data-service="personalCare">
-        <span class="emoji" aria-hidden="true">♡</span>
-        <h3>Cuidado personal</h3>
-        <span class="badge" data-status>Planificado</span>
-        <p>Ayuda para bañarse, vestirse, comer y moverse con seguridad.</p>
-        
-      </article>
-      <article class="card card-peach" data-service="coordination">
-        <span class="emoji" aria-hidden="true">☰</span>
-        <h3>Coordinación de atención</h3>
-        <span class="badge" data-status>Planificado</span>
-        <p>Un solo contacto para órdenes, autorizaciones y horarios.</p>
-        
-      </article>
-    </div>
+    <ol class="row-list">
+      <li class="row-item" data-service="nursing">
+        <span class="row-num" aria-hidden="true">01</span>
+        <div class="row-main"><h3>Enfermería especializada</h3><p>Atención de enfermeras RN y LPN en casa, según las órdenes del médico.</p></div>
+        <div class="row-side"><span class="badge" data-status>Planificado</span></div>
+      </li>
+      <li class="row-item" data-service="personalCare">
+        <span class="row-num" aria-hidden="true">02</span>
+        <div class="row-main"><h3>Cuidado personal</h3><p>Ayuda para bañarse, vestirse, comer y moverse con seguridad.</p></div>
+        <div class="row-side"><span class="badge" data-status>Planificado</span></div>
+      </li>
+      <li class="row-item" data-service="coordination">
+        <span class="row-num" aria-hidden="true">03</span>
+        <div class="row-main"><h3>Coordinación de atención</h3><p>Un solo contacto para órdenes, autorizaciones y horarios.</p></div>
+        <div class="row-side"><span class="badge" data-status>Planificado</span></div>
+      </li>
+    </ol>
   </section>
 
-  <section class="section" id="programas" aria-labelledby="programs-title">
-    <h2 id="programs-title">Programas de Medicaid</h2>
-    <div class="programs">
-      <article class="panel panel-mint" data-program="gapp">
-        <h3>GAPP <span lang="en">Georgia Pediatric Program</span></h3>
+  <section class="band band-ink" id="programas" aria-labelledby="programs-title">
+    <div class="band-head">
+      <h2 id="programs-title">Programas de Medicaid</h2>
+      <p>Dos programas de Medicaid de Georgia pagan la atención en casa.</p>
+    </div>
+    <div class="prog-cols">
+      <article class="prog-col prog-gapp" data-program="gapp">
+        <p class="prog-name" aria-hidden="true">GAPP</p>
+        <h3><span class="visually-hidden">GAPP: </span><span lang="en">Georgia Pediatric Program</span></h3>
         <p>Niños y jóvenes menores de 21 años, médicamente frágiles, que necesitan enfermería o cuidado personal en casa.</p>
         <span class="badge" data-status>Inscripción pendiente</span>
+        
       </article>
-      <article class="panel panel-peach" data-program="icwp">
-        <h3>ICWP <span lang="en">Independent Care Waiver Program</span></h3>
+      <article class="prog-col prog-icwp" data-program="icwp">
+        <p class="prog-name" aria-hidden="true">ICWP</p>
+        <h3><span class="visually-hidden">ICWP: </span><span lang="en">Independent Care Waiver Program</span></h3>
         <p>Adultos de 21 a 64 años con discapacidades físicas graves o una lesión cerebral.</p>
         <span class="badge" data-status>Inscripción pendiente</span>
+        
       </article>
     </div>
   </section>
 
-  <section class="section" id="contacto" aria-labelledby="contact-title">
-    <div class="contact-card">
+  <section class="section" id="como" aria-labelledby="how-title">
+    <h2 id="how-title">Cómo funciona</h2>
+    <ol class="flow">
+      <li><strong>Comuníquese</strong><span>Envíe una solicitud.</span></li>
+      <li><strong>Revisamos la cobertura</strong><span>Su estado en GAPP o ICWP y las órdenes del médico.</span></li>
+      <li><strong>La atención empieza en casa</strong><span>Una enfermera planifica la atención y el personal comienza las horas aprobadas.</span></li>
+    </ol>
+  </section>
+
+  <section class="band band-mint" id="contacto" aria-labelledby="contact-title">
+    <div class="contact-grid">
       <div class="contact-copy">
         <h2 id="contact-title">Solicitar atención</h2>
         <p>Cuéntenos qué necesita. Abriremos pronto y le llamaremos cuando empecemos a aceptar clientes.</p>
@@ -167,7 +177,7 @@
     </div>
   </section>
 
-  <section class="section" id="preguntas" aria-labelledby="questions-title">
+  <section class="section split-head" id="preguntas" aria-labelledby="questions-title">
     <h2 id="questions-title">Preguntas frecuentes</h2>
     <div class="faq">
       <details><summary>¿Ya aceptan clientes?</summary><p>Todavía no. Estamos terminando la licencia y la inscripción en Medicaid. Envíe una solicitud y le llamaremos cuando abramos.</p></details>

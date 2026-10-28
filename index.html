@@ -26,10 +26,10 @@
   <meta property="og:locale" content="en_US">
   <meta name="twitter:card" content="summary_large_image">
   <script>document.documentElement.classList.add("js")</script>
-  <link rel="stylesheet" href="/assets/css/home.css?v=5">
-  <script src="/assets/js/config.js?v=5" defer></script>
-  <script src="/assets/js/app.js?v=5" defer></script>
-  <script src="/assets/js/form.js?v=5" defer></script>
+  <link rel="stylesheet" href="/assets/css/home.css?v=6">
+  <script src="/assets/js/config.js?v=6" defer></script>
+  <script src="/assets/js/app.js?v=6" defer></script>
+  <script src="/assets/js/form.js?v=6" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"MedicalBusiness","@id":"https://carelife365.com/#business","name":"CareLife 365","url":"https://carelife365.com/","logo":"https://carelife365.com/assets/img/apple-touch-icon.png","image":"https://carelife365.com/assets/img/social-card.png","description":"In-home skilled nursing and personal care for children and adults through Georgia Medicaid GAPP and ICWP.","areaServed":{"@type":"City","name":"Atlanta, Georgia"},"knowsLanguage":["en","es"],"address":{"@type":"PostalAddress","addressLocality":"Atlanta","addressRegion":"GA","addressCountry":"US"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"CareLife 365","url":"https://carelife365.com/","inLanguage":["en","es"]}</script>
 </head>
@@ -86,53 +86,61 @@
     </div>
   </section>
 
-  <section class="section" id="care" aria-labelledby="care-title">
+  <section class="section split-head" id="care" aria-labelledby="care-title">
     <h2 id="care-title">Services</h2>
-    <div class="cards">
-      <article class="card card-ink" data-service="nursing">
-        <span class="emoji" aria-hidden="true">✚</span>
-        <h3>Skilled nursing</h3>
-        <span class="badge" data-status>Planned</span>
-        <p>RN and LPN care at home, following physician orders.</p>
-        <a class="card-link" href="/services/skilled-nursing/">Learn more <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="card card-mint" data-service="personalCare">
-        <span class="emoji" aria-hidden="true">♡</span>
-        <h3>Personal care</h3>
-        <span class="badge" data-status>Planned</span>
-        <p>Bathing, dressing, meals and getting around safely.</p>
-        <a class="card-link" href="/services/personal-care/">Learn more <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="card card-peach" data-service="coordination">
-        <span class="emoji" aria-hidden="true">☰</span>
-        <h3>Care coordination</h3>
-        <span class="badge" data-status>Planned</span>
-        <p>One contact for orders, authorizations and scheduling.</p>
-        
-      </article>
-    </div>
+    <ol class="row-list">
+      <li class="row-item" data-service="nursing">
+        <span class="row-num" aria-hidden="true">01</span>
+        <div class="row-main"><h3>Skilled nursing</h3><p>RN and LPN care at home, following physician orders.</p></div>
+        <div class="row-side"><span class="badge" data-status>Planned</span><a class="row-link" href="/services/skilled-nursing/">Learn more<span class="visually-hidden">: Skilled nursing</span> <span aria-hidden="true">→</span></a></div>
+      </li>
+      <li class="row-item" data-service="personalCare">
+        <span class="row-num" aria-hidden="true">02</span>
+        <div class="row-main"><h3>Personal care</h3><p>Bathing, dressing, meals and getting around safely.</p></div>
+        <div class="row-side"><span class="badge" data-status>Planned</span><a class="row-link" href="/services/personal-care/">Learn more<span class="visually-hidden">: Personal care</span> <span aria-hidden="true">→</span></a></div>
+      </li>
+      <li class="row-item" data-service="coordination">
+        <span class="row-num" aria-hidden="true">03</span>
+        <div class="row-main"><h3>Care coordination</h3><p>One contact for orders, authorizations and scheduling.</p></div>
+        <div class="row-side"><span class="badge" data-status>Planned</span></div>
+      </li>
+    </ol>
   </section>
 
-  <section class="section" id="programs" aria-labelledby="programs-title">
-    <h2 id="programs-title">Medicaid programs</h2>
-    <div class="programs">
-      <article class="panel panel-mint" data-program="gapp">
-        <h3>GAPP <span>Georgia Pediatric Program</span></h3>
+  <section class="band band-ink" id="programs" aria-labelledby="programs-title">
+    <div class="band-head">
+      <h2 id="programs-title">Medicaid programs</h2>
+      <p>Two Georgia Medicaid programs pay for care at home.</p>
+    </div>
+    <div class="prog-cols">
+      <article class="prog-col prog-gapp" data-program="gapp">
+        <p class="prog-name" aria-hidden="true">GAPP</p>
+        <h3><span class="visually-hidden">GAPP: </span><span>Georgia Pediatric Program</span></h3>
         <p>Medically fragile children under 21 who need nursing or personal care at home.</p>
         <span class="badge" data-status>Target program · participation pending</span>
-        <a class="card-link" href="/gapp/">How GAPP works <span aria-hidden="true">→</span></a>
+        <a class="prog-link" href="/gapp/">How GAPP works <span aria-hidden="true">→</span></a>
       </article>
-      <article class="panel panel-peach" data-program="icwp">
-        <h3>ICWP <span>Independent Care Waiver Program</span></h3>
+      <article class="prog-col prog-icwp" data-program="icwp">
+        <p class="prog-name" aria-hidden="true">ICWP</p>
+        <h3><span class="visually-hidden">ICWP: </span><span>Independent Care Waiver Program</span></h3>
         <p>Adults 21 to 64 with severe physical disabilities or a brain injury.</p>
         <span class="badge" data-status>Target program · participation pending</span>
-        <a class="card-link" href="/icwp/">How ICWP works <span aria-hidden="true">→</span></a>
+        <a class="prog-link" href="/icwp/">How ICWP works <span aria-hidden="true">→</span></a>
       </article>
     </div>
   </section>
 
-  <section class="section" id="contact" aria-labelledby="contact-title">
-    <div class="contact-card">
+  <section class="section" id="how" aria-labelledby="how-title">
+    <h2 id="how-title">How it works</h2>
+    <ol class="flow">
+      <li><strong>Reach out</strong><span>Send a request.</span></li>
+      <li><strong>We check coverage</strong><span>Your GAPP or ICWP status and the doctor’s orders.</span></li>
+      <li><strong>Care starts at home</strong><span>A nurse plans care and staff start the approved hours.</span></li>
+    </ol>
+  </section>
+
+  <section class="band band-mint" id="contact" aria-labelledby="contact-title">
+    <div class="contact-grid">
       <div class="contact-copy">
         <h2 id="contact-title">Request care</h2>
         <p>Tell us what you need. We’re opening soon and will call you back as we start taking clients.</p>
@@ -179,20 +187,20 @@
     </div>
   </section>
 
-  <section class="section split-tiles" aria-label="Referrals and careers">
-    <a class="tile tile-line" href="/referrals/">
-      <span class="tile-label">Case managers &amp; doctors</span>
-      <strong class="small-strong">Refer a client</strong>
+  <section class="section links-row" aria-label="Referrals and careers">
+    <a class="big-link" href="/referrals/">
+      <span class="big-link-label">Case managers &amp; doctors</span>
+      <strong>Refer a client <span aria-hidden="true">→</span></strong>
       <span>How to send GAPP and ICWP referrals.</span>
     </a>
-    <a class="tile tile-line" href="/careers/">
-      <span class="tile-label">RNs, LPNs, CNAs &amp; aides</span>
-      <strong class="small-strong">Join our team</strong>
+    <a class="big-link" href="/careers/">
+      <span class="big-link-label">RNs, LPNs, CNAs &amp; aides</span>
+      <strong>Join our team <span aria-hidden="true">→</span></strong>
       <span>We’re building our first team.</span>
     </a>
   </section>
 
-  <section class="section" id="questions" aria-labelledby="questions-title">
+  <section class="section split-head" id="questions" aria-labelledby="questions-title">
     <h2 id="questions-title">FAQ</h2>
     <div class="faq">
       <details>
