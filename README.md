@@ -1,4 +1,4 @@
-# KairoBridge Home Care website
+# CareLife 365 website
 
 Website for an Atlanta Medicaid home care agency (GAPP and ICWP): in-home skilled nursing and personal care for children and adults. Plain HTML, CSS and JavaScript on Netlify, with a tiny build script and no packages.
 

@@ -282,3 +282,7 @@ dialog h2 { font-size: 30px; margin-top: 0; }
   .cta-band .pill { width: 100%; }
   .cta-actions { width: 100%; }
 }
+
+/* Keep the brand name on one line on small phones. */
+.brand [data-brand-name] { white-space: nowrap; }
+@media (max-width: 360px) { .brand { font-size: 19px; gap: 8px; } .brand-dot { width: 26px; height: 26px; } }

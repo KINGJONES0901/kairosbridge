@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const ASSET_V = 4; // bump when home.css, app.js or form.js change
+const ASSET_V = 5; // bump when home.css, app.js or form.js change
 
 // ---------- Config ----------
 const sandbox = { window: {} };
@@ -18,8 +18,8 @@ const C = sandbox.window.SITE_CONFIG;
 const MODE = ["prelaunch", "limited", "operational"].includes(C.mode) ? C.mode : "prelaunch";
 const PRE = MODE === "prelaunch";
 const SITE = String(C.siteUrl || "").replace(/\/+$/, "");
-const NAME = C.brand.name || "KairoBridge";
-const FULL = `${NAME} ${C.brand.descriptor || "Home Care"}`;
+const NAME = C.brand.name || "CareLife 365";
+const FULL = C.brand.fullName || `${NAME} ${C.brand.descriptor || "Home Care"}`;
 const contact = C.contact || {};
 const addr = typeof contact.address === "object" && contact.address ? contact.address : {};
 const showContact = !PRE || C.showContactInPrelaunch === true;

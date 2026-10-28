@@ -57,9 +57,9 @@
 
   /* ---------- Brand ---------- */
   function applyBrand() {
-    var name = brand.name || "KairoBridge";
+    var name = brand.name || "CareLife 365";
     var descriptor = brand.descriptor || "Home Care";
-    var full = name + " " + descriptor;
+    var full = brand.fullName || name + " " + descriptor;
     setText("[data-brand-name]", name);
     setText("[data-brand-descriptor]", descriptor.toUpperCase());
     setText("[data-brand-full]", brand.legalName || full);

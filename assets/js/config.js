@@ -1,5 +1,5 @@
 /*
- * KairoBridge Home Care: the one place to change company facts.
+ * CareLife 365: the one place to change company facts.
  *
  * Every page is generated from this file by tools/build.mjs. Netlify runs that
  * build on each deploy, so editing this file on GitHub updates the whole site
@@ -15,9 +15,10 @@
  */
 window.SITE_CONFIG = {
   brand: {
-    name: "KairoBridge",          // shown large in the header
-    descriptor: "Home Care",      // shown small under the name
-    legalName: "",                // e.g. "KairoBridge Home Care LLC" once registered
+    name: "CareLife 365",         // shown large in the header
+    descriptor: "Home Care",      // shown small next to the name
+    fullName: "CareLife 365",     // used in page titles, footer and Google data
+    legalName: "",                // e.g. "CareLife 365 LLC" once registered
     city: "Atlanta, Georgia",
   },
 

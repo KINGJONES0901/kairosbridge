@@ -1,4 +1,4 @@
-# KairoBridge Home Care: Netlify configuration.
+# CareLife 365: Netlify configuration.
 # Each deploy runs tools/build.mjs (plain Node, no packages), which rebuilds
 # every page from assets/js/config.js. The site root is this folder.
 
